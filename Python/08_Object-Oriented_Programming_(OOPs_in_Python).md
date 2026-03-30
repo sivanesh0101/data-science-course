@@ -14,225 +14,280 @@ OOPS (Object-Oriented Programming System) is a programming paradigm that organiz
 </p>
 
 
-# Object-Oriented Programming (OOP) in Python
+# Object-Oriented Programming (OOP) in Python — Explained with a Banking System
 
 ## Introduction
 
-Object-Oriented Programming (OOP) is a programming paradigm that organizes code using "objects" and "classes". It helps in writing clean, reusable, and scalable code.
+Object-Oriented Programming (OOP) helps you model real-world systems in code. Instead of writing random functions, you organize everything into structured units called classes and objects.
+
+We will understand every concept using a simple banking system.
 
 ---
 
-## 1. What is a Class?
+## 1. Why OOP? (Problem Without It)
 
-A class is a blueprint or template used to create objects. It defines properties (variables) and behaviors (functions).
-
-### Example:
+Imagine writing a banking app using only functions:
 
 ```python
-class Car:
-    color = "red"
+balance = 1000
 
-    def drive(self):
-        print("Car is moving")
+def deposit(amount):
+    global balance
+    balance += amount
+
+def withdraw(amount):
+    global balance
+    balance -= amount
 ```
+
+Problems:
+
+* Only one account can exist
+* Data is not secure
+* Not reusable
+* Hard to scale
+
+This is where OOP solves everything.
 
 ---
 
-## 2. What is an Object?
+## 2. Class and Object
 
-An object is an instance of a class. It represents a real-world entity.
+A class is a blueprint. An object is a real instance.
 
-### Example:
+### Banking Example
 
 ```python
-c1 = Car()
-print(c1.color)
-c1.drive()
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
 ```
+
+Create objects:
+
+```python
+acc1 = BankAccount("Siva", 1000)
+acc2 = BankAccount("Ravi", 500)
+```
+
+Now:
+
+* acc1 and acc2 are separate accounts
+* Each has its own data
 
 ---
 
-## 3. The `__init__` Method (Constructor)
-
-The `__init__` method is a special method that is automatically called when an object is created. It is used to initialize object attributes.
-
-### Example:
+## 3. Understanding `__init__` Clearly
 
 ```python
-class Car:
-    def __init__(self, color):
-        self.color = color
-
-c1 = Car("blue")
-print(c1.color)
+def __init__(self, name, balance):
+    self.name = name
+    self.balance = balance
 ```
+
+When you do:
+
+```python
+acc1 = BankAccount("Siva", 1000)
+```
+
+Python automatically runs:
+
+```python
+__init__(acc1, "Siva", 1000)
+```
+
+This sets:
+
+* acc1.name = "Siva"
+* acc1.balance = 1000
 
 ---
 
-## 4. The `self` Keyword
-
-* `self` refers to the current instance of the class.
-* It is used to access variables and methods within the class.
-
----
-
-## 5. Instance Variables vs Class Variables
-
-### Instance Variables
-
-* Unique to each object
-* Defined inside `__init__`
+## 4. Adding Behavior (Methods)
 
 ```python
-class Car:
-    def __init__(self, color):
-        self.color = color
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        print("Deposited:", amount)
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Insufficient balance")
+        else:
+            self.balance -= amount
+            print("Withdrawn:", amount)
+
+    def check_balance(self):
+        print("Balance:", self.balance)
 ```
 
-### Class Variables
-
-* Shared across all objects
-* Defined outside methods
+Usage:
 
 ```python
-class Car:
-    wheels = 4
-```
+acc1 = BankAccount("Siva", 1000)
 
----
-
-## 6. Methods in Classes
-
-### Instance Methods
-
-Work with object data
-
-```python
-def drive(self):
-    print("Driving")
-```
-
-### Class Methods
-
-```python
-@classmethod
-def info(cls):
-    print("This is a class method")
-```
-
-### Static Methods
-
-```python
-@staticmethod
-def greet():
-    print("Hello")
-```
-
----
-
-## 7. Four Pillars of OOP
-
-### 1. Encapsulation
-
-Bundling data and methods together.
-
-```python
-class Bank:
-    def __init__(self, balance):
-        self.__balance = balance
+acc1.deposit(500)
+acc1.withdraw(200)
+acc1.check_balance()
 ```
 
 ---
 
-### 2. Inheritance
+## 5. Encapsulation (Data Protection)
 
-One class inherits properties from another.
+We should not allow direct access to balance.
 
 ```python
-class Animal:
-    def speak(self):
-        print("Animal speaks")
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self.__balance = balance   # private variable
 
-class Dog(Animal):
-    pass
+    def deposit(self, amount):
+        self.__balance += amount
+
+    def get_balance(self):
+        return self.__balance
+```
+
+Now:
+
+* `__balance` cannot be accessed directly
+* Controlled access improves security
+
+---
+
+## 6. Inheritance (Reusing Code)
+
+Let’s create different account types.
+
+```python
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
+
+    def show(self):
+        print(self.name, self.balance)
+
+
+class SavingsAccount(BankAccount):
+    def add_interest(self):
+        self.balance += self.balance * 0.05
+
+
+class CurrentAccount(BankAccount):
+    def overdraft(self):
+        print("Overdraft allowed")
+```
+
+Usage:
+
+```python
+s1 = SavingsAccount("Siva", 1000)
+s1.add_interest()
+s1.show()
 ```
 
 ---
 
-### 3. Polymorphism
-
-Same method name behaves differently.
+## 7. Polymorphism (Same Method, Different Behavior)
 
 ```python
-class Dog:
-    def sound(self):
-        print("Bark")
+class SavingsAccount:
+    def interest(self):
+        print("Savings interest: 5%")
 
-class Cat:
-    def sound(self):
-        print("Meow")
+class FixedDeposit:
+    def interest(self):
+        print("FD interest: 7%")
 ```
+
+Usage:
+
+```python
+accounts = [SavingsAccount(), FixedDeposit()]
+
+for acc in accounts:
+    acc.interest()
+```
+
+Same method name, different behavior.
 
 ---
 
-### 4. Abstraction
-
-Hiding implementation details.
+## 8. Abstraction (Hiding Internal Logic)
 
 ```python
 from abc import ABC, abstractmethod
 
-class Shape(ABC):
+class Bank(ABC):
     @abstractmethod
-    def area(self):
+    def loan(self):
         pass
+
+class SBI(Bank):
+    def loan(self):
+        print("Providing loan")
 ```
 
----
-
-## 8. Inheritance Types
-
-* Single Inheritance
-* Multiple Inheritance
-* Multilevel Inheritance
-* Hierarchical Inheritance
+User only sees "loan", not how it works internally.
 
 ---
 
-## 9. Example: Simple Student System
+## 9. Final Combined Example
 
 ```python
-class Student:
-    def __init__(self, name, marks):
+class BankAccount:
+    def __init__(self, name, balance):
         self.name = name
-        self.marks = marks
+        self.__balance = balance
 
-    def display(self):
-        print(self.name, self.marks)
+    def deposit(self, amount):
+        self.__balance += amount
 
-s1 = Student("Siva", 90)
-s1.display()
+    def withdraw(self, amount):
+        if amount <= self.__balance:
+            self.__balance -= amount
+
+    def get_balance(self):
+        return self.__balance
+
+
+class SavingsAccount(BankAccount):
+    def add_interest(self):
+        self._BankAccount__balance += self._BankAccount__balance * 0.05
+
+
+acc = SavingsAccount("Siva", 1000)
+acc.deposit(500)
+acc.add_interest()
+print(acc.get_balance())
 ```
 
 ---
 
-## 10. Advantages of OOP
+## 10. Key Takeaways
 
-* Code reusability
-* Better organization
-* Easy debugging
-* Scalability
+* Class = blueprint
+* Object = real instance
+* `__init__` initializes data
+* Encapsulation protects data
+* Inheritance reuses code
+* Polymorphism allows flexibility
+* Abstraction hides complexity
 
 ---
 
 ## Conclusion
 
-OOP helps structure programs using real-world concepts. By using classes and objects, developers can write modular, reusable, and maintainable code.
+Using OOP, you can build scalable systems like real banking applications where each user has independent data, secure transactions, and reusable code structure.
 
 ---
-
-## Next Steps
-
-* Practice creating classes and objects
-* Build small projects (Bank system, Library system)
-* Learn advanced concepts like decorators and design patterns
